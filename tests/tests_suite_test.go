@@ -130,6 +130,7 @@ func startVM() (context.Context, VM) {
 		types.WithID(vmName),
 		types.WithSSHUser(user()),
 		types.WithSSHPass(pass()),
+		types.WithDisplay("-vga qxl -spice port=5901,disable-ticketing,addr=127.0.0.1"),
 		func(m *types.MachineConfig) error {
 			m.Args = append(m.Args,
 				"-chardev", fmt.Sprintf("stdio,mux=on,id=char0,logfile=%s,signal=off", path.Join(stateDir, "serial.log")),
