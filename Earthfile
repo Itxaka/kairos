@@ -487,6 +487,20 @@ ipxe-iso:
     SAVE ARTIFACT /build/ipxe/src/bin/ipxe.iso iso AS LOCAL build/${ISO_NAME}-ipxe.iso.ipxe
     SAVE ARTIFACT /build/ipxe/src/bin/ipxe.usb usb AS LOCAL build/${ISO_NAME}-ipxe-usb.img.ipxe
 
+raw-image:
+    ARG OSBUILDER_IMAGE
+    FROM $OSBUILDER_IMAGE
+    COPY +version/VERSION ./
+    ARG VERSION=$(cat VERSION)
+    ARG IMG_NAME=${ISO_NAME}-${VERSION}.raw
+    WORKDIR /build
+    COPY +image-rootfs/rootfs /build/image
+    COPY ./tests/assets/raw.yaml /build/config.yaml
+    # $1 is the rootfs to build raw image from, $2 is the output image to generate and $3 is the cloud-init file
+    ENV EXTEND=32000
+    RUN /raw-images.sh /build/image /build/$IMG_NAME /build/config.yaml
+    SAVE ARTIFACT /build/$IMG_NAME image.raw AS LOCAL build/$IMG_NAME
+
 # Generic targets
 # usage e.g. ./earthly.sh +datasource-iso --CLOUD_CONFIG=tests/assets/qrcode.yaml
 datasource-iso:
