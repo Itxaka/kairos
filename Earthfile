@@ -382,6 +382,7 @@ base-image:
         END
     END
 
+    RUN mkdir /data
 
     RUN rm -rf /tmp/*
 
