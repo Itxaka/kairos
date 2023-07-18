@@ -54,7 +54,7 @@ jobs:
           echo "::set-output name=matrix::{\"include\": $content }"
 
   core:
-    uses: kairos-io/kairos/.github/workflows/reusable-build-flavor.yaml@master
+    uses: ./.github/workflows/reusable-build-flavor.yaml
     secrets: inherit
     with:
       flavor: ${{ matrix.flavor }}
@@ -66,7 +66,7 @@ jobs:
 
 
   framework:
-    uses: kairos-io/kairos/.github/workflows/reusable-build-framework-flavor.yaml@master
+    uses: ./.github/workflows/reusable-build-framework-flavor.yaml@master
     secrets: inherit
     with:
       flavor: ${{ matrix.flavor }}
@@ -77,7 +77,7 @@ jobs:
       matrix: ${{fromJson(needs.get-framework-matrix.outputs.matrix)}}
 
   install:
-    uses: kairos-io/kairos/.github/workflows/reusable-install-test.yaml@master
+    uses: ./.github/workflows/reusable-install-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
@@ -89,7 +89,7 @@ jobs:
           - flavor: opensuse-leap
 
   zfs:
-    uses: kairos-io/kairos/.github/workflows/reusable-zfs-test.yaml@master
+    uses: ./.github/workflows/reusable-zfs-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
@@ -101,7 +101,7 @@ jobs:
           - flavor: "ubuntu"
 
   acceptance:
-    uses: kairos-io/kairos/.github/workflows/reusable-qemu-acceptance-test.yaml@master
+    uses: ./.github/workflows/reusable-qemu-acceptance-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
@@ -119,7 +119,7 @@ jobs:
           - flavor: "ubuntu-22-lts"
 
   bundles:
-    uses: kairos-io/kairos/.github/workflows/reusable-qemu-bundles-test.yaml@master
+    uses: ./.github/workflows/reusable-qemu-bundles-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
@@ -131,7 +131,7 @@ jobs:
           - flavor: opensuse-tumbleweed # Kubo test needs systemd version 252+ which atm is not available in Leap
 
   reset:
-    uses: kairos-io/kairos/.github/workflows/reusable-qemu-reset-test.yaml@master
+    uses: ./.github/workflows/reusable-qemu-reset-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
@@ -144,7 +144,7 @@ jobs:
           - flavor: opensuse-leap
 
   netboot:
-    uses: kairos-io/kairos/.github/workflows/reusable-qemu-netboot-test.yaml@master
+    uses: ./.github/workflows/reusable-qemu-netboot-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
@@ -158,7 +158,7 @@ jobs:
           - flavor: ubuntu
 
   upgrade:
-    uses: kairos-io/kairos/.github/workflows/reusable-upgrade-with-cli-test.yaml@master
+    uses: ./.github/workflows/reusable-upgrade-with-cli-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
@@ -171,7 +171,7 @@ jobs:
           - flavor: opensuse-leap
 
   upgrade-latest:
-    uses: kairos-io/kairos/.github/workflows/reusable-upgrade-latest-test.yaml@master
+    uses: ./.github/workflows/reusable-upgrade-latest-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
@@ -187,7 +187,7 @@ jobs:
           # - flavor: "ubuntu"
 
   encryption:
-    uses: kairos-io/kairos/.github/workflows/reusable-encryption-test.yaml@master
+    uses: ./.github/workflows/reusable-encryption-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
       label: ${{ matrix.label }}
@@ -206,7 +206,7 @@ jobs:
           - "opensuse-leap"
 
   standard:
-    uses: kairos-io/kairos/.github/workflows/reusable-build-provider.yaml@master
+    uses: ./.github/workflows/reusable-build-provider.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     strategy:
@@ -216,7 +216,7 @@ jobs:
           - "opensuse-leap"
           - "alpine-opensuse-leap"
   various:
-    uses: kairos-io/kairos/.github/workflows/reusable-provider-tests.yaml@master
+    uses: ./.github/workflows/reusable-provider-tests.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
       label: ${{ matrix.label }}
@@ -240,7 +240,7 @@ jobs:
           - label: "provider-upgrade"
             flavor: "alpine-opensuse-leap"
   standard-upgrade-latest:
-    uses: kairos-io/kairos/.github/workflows/reusable-provider-upgrade-latest-test.yaml@master
+    uses: ./.github/workflows/reusable-provider-upgrade-latest-test.yaml@master
     with:
       flavor: ${{ matrix.flavor }}
     needs:
