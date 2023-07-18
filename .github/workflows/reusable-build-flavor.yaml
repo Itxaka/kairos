@@ -73,6 +73,7 @@ jobs:
           FLAVOR: ${{ inputs.flavor }}
           IMAGE: quay.io/kairos/core-${{ inputs.flavor }}:latest
         run: |
+          exit 1
           earthly +ci --SECURITY_SCANS=false --IMAGE=$IMAGE --FLAVOR=$FLAVOR
           sudo mv build/* .
           sudo rm -rf build
@@ -126,3 +127,48 @@ jobs:
         run: |
           docker tag quay.io/kairos/core-${{ inputs.flavor }}:latest ttl.sh/kairos-${{ inputs.flavor }}-${{ github.sha }}:24h
           docker push ttl.sh/kairos-${{ inputs.flavor }}-${{ github.sha }}:24h
+      - name: notify if failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Job failure on main branch for job $GITHUB_JOB in workflow $GITHUB_WORKFLOW\nCommit failed is <https://$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA|$GITHUB_SHA>"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": ":thisisfine: Failed Run",
+                        "emoji": true
+                      },
+                      "url": "https://$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+                    },
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": ":kairos: Repository link",
+                        "emoji": true
+                      },
+                      "url": "https:///$GITHUB_REPOSITORY"
+                    }
+                  ]
+                }
+              ]
+            }
