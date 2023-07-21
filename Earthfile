@@ -314,7 +314,8 @@ base-image:
     END
 
     # TEST KAIROS-AGENT FROM BRANCH
-    ARG KAIROS_AGENT_DEV
+    # TODO: DROP D¿THIS, ONLY FOR CURRENT TESTING
+    ARG KAIROS_AGENT_DEV=true
     ARG KAIROS_AGENT_DEV_BRANCH=main
     IF [ "$KAIROS_AGENT_DEV" = "true" ]
         RUN rm -rf /usr/bin/kairos-agent
