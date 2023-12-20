@@ -407,14 +407,14 @@ uki-build:
         --measure \
         --output uki.signed.efi
     RUN sbsign --key DB.key --cert DB.crt --output systemd-bootx64.signed.efi /usr/lib/systemd/boot/efi/systemd-bootx64.efi
-    RUN printf 'title Kairos %s\nefi /EFI/kairos/%s.efi\nversion %s' ${KAIROS_VERSION} ${KAIROS_VERSION} ${KAIROS_VERSION} > ${KAIROS_VERSION}.conf
+    RUN printf 'title Kairos %s\nefi /EFI/kairos/%s.efi\nversion %s' ${KAIROS_VERSION} ${KAIROS_VERSION} ${KAIROS_VERSION} > ${KAIROS_VERSION}+3.conf #+3 is to enable 3 tries to boot before fallback
     RUN printf 'default @saved\ntimeout 5\nconsole-mode max\neditor no\n' > loader.conf
     SAVE ARTIFACT PK.der PK.der
     SAVE ARTIFACT KEK.der KEK.der
     SAVE ARTIFACT DB.der DB.der
     SAVE ARTIFACT systemd-bootx64.signed.efi systemd-bootx64.signed.efi
     SAVE ARTIFACT uki.signed.efi uki.signed.efi
-    SAVE ARTIFACT ${KAIROS_VERSION}.conf ${KAIROS_VERSION}.conf
+    SAVE ARTIFACT ${KAIROS_VERSION}+3.conf ${KAIROS_VERSION}+3.conf
     SAVE ARTIFACT loader.conf loader.conf
 
 # Base target to set the directory structure for the image artifacts
@@ -426,7 +426,7 @@ uki-image-artifacts:
     ARG KAIROS_VERSION=$(cat VERSION)
     COPY +uki-build/systemd-bootx64.signed.efi /output/efi/EFI/BOOT/BOOTX64.EFI
     COPY +uki-build/uki.signed.efi /output/efi/EFI/kairos/${KAIROS_VERSION}.efi
-    COPY +uki-build/${KAIROS_VERSION}.conf /output/efi/loader/entries/${KAIROS_VERSION}.conf
+    COPY +uki-build/${KAIROS_VERSION}+3.conf /output/efi/loader/entries/${KAIROS_VERSION}+3.conf
     COPY +uki-build/loader.conf /output/efi/loader/loader.conf
     COPY +uki-build/PK.der /output/efi/loader/keys/kairos/PK.der
     COPY +uki-build/KEK.der /output/efi/loader/keys/kairos/KEK.der
@@ -459,7 +459,7 @@ uki-iso:
     WORKDIR /build
     COPY +uki-build/systemd-bootx64.signed.efi .
     COPY +uki-build/uki.signed.efi .
-    COPY +uki-build/${KAIROS_VERSION}.conf .
+    COPY +uki-build/${KAIROS_VERSION}+3.conf .
     COPY +uki-build/loader.conf .
     COPY +uki-build/PK.der .
     COPY +uki-build/KEK.der .
@@ -482,7 +482,7 @@ uki-iso:
     RUN mcopy -i /tmp/efi/efiboot.img PK.der ::loader/keys/kairos/PK.der
     RUN mcopy -i /tmp/efi/efiboot.img KEK.der ::loader/keys/kairos/KEK.der
     RUN mcopy -i /tmp/efi/efiboot.img DB.der ::loader/keys/kairos/DB.der
-    RUN mcopy -i /tmp/efi/efiboot.img ${KAIROS_VERSION}.conf ::loader/entries/${KAIROS_VERSION}.conf
+    RUN mcopy -i /tmp/efi/efiboot.img ${KAIROS_VERSION}+3.conf ::loader/entries/${KAIROS_VERSION}+3.conf
     RUN mcopy -i /tmp/efi/efiboot.img loader.conf ::loader/loader.conf
     RUN mcopy -i /tmp/efi/efiboot.img uki.signed.efi ::EFI/kairos/${KAIROS_VERSION}.efi
     RUN mcopy -i /tmp/efi/efiboot.img systemd-bootx64.signed.efi ::EFI/BOOT/BOOTX64.EFI
